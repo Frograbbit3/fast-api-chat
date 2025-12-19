@@ -1,0 +1,11 @@
+art
+beautifulsoup4
+cryptography
+fastapi
+humanfriendly
+pillow
+requests
+slowapi
+starlette
+uvicorn
+websockets

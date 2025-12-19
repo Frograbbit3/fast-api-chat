@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+    <link rel="stylesheet" href="static/base.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.js"></script>
+    <script src="/static/main.js"></script>
+        <style>
+            .login {
+                display: flex;
+                align-items:center;
+                justify-content: center;
+                flex-direction: column;
+                height: 100vh;
+            }
+            input {
+                font-size: 50px;
+                font-family: Verdana, Geneva, Tahoma, sans-serif;
+            }
+            .username {
+              align-self: center;  
+            }
+
+            h1 {
+                font-size: 100px;
+                font-family: Verdana, Geneva, Tahoma, sans-serif;
+            }
+            p {
+                font-size: 25px;
+                font-family: Verdana, Geneva, Tahoma, sans-serif;
+            }
+            button {
+                font-family: Verdana, Geneva, Tahoma, sans-serif;
+                font-size: 25px;
+                border-radius: 3px;
+                margin: 25px;
+            }
+            .status {
+                display: none;
+            }
+        </style>
+        <div class="login">
+            <h1>Sign in</h1>
+            <p class="username">Username</p>
+            <input id = "username"></input>
+            <p>Password</p>
+            <input id= "password" type="password"></input>
+            <button id = "submit">Submit</button>
+            <p id="status" class="status">Success!</p>
+        </div>
+
+
+    <script>
+        async function sha256Hash(data) {
+            return CryptoJS.SHA256(data).toString(CryptoJS.enc.Hex);
+        }
+
+        const submit = document.getElementById("submit");
+        const user = document.getElementById("username");
+        const pass = document.getElementById("password");
+        const status = document.getElementById("status");
+        submit.addEventListener("click", async function(){
+            hased = await sha256Hash(pass.value);
+            m = await fetch("/login-api", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({username:user.value, password:hased})
+                })
+            const response = await m.json();
+            console.log(response.cookie)
+            if (m.status == 200) {
+                setCookie("token", response.cookie)
+               // document.cookie = "token=" + response.cookie + ';';
+                window.location.assign("/chat");
+                status.style.display = "none";
+            }else{
+                pass.value = ""
+                status.style.display = "flex";
+                status.innerHTML = "Incorrect!"
+                
+            }
+        })
+    </script>
+</html>

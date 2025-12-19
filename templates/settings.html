@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="/static/base.css">
+    <link rel="icon" type="image/png" id="icon" href="/static/icon.png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="/static/main.js"></script>
+    <style>
+        body {
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            margin: 20px;
+        }
+
+        .main {
+            display: flex;
+            gap: 40px;
+        }
+
+  
+        .right {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .left {
+            width: 200px;
+        }
+
+        .middle {
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            width: 25%;
+            
+        }
+
+        .right {
+            flex: 1;
+        }
+
+        h1,
+        h2 {
+            margin: 5px 0;
+            padding: 10px;
+        }
+
+        .lobbyInfo {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+
+        select {
+            width: 100%;
+            padding: 5px;
+        }
+
+        .usermenu {
+            display: flex;
+        }
+
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        li {
+            cursor: pointer;
+            margin-bottom: 4px;
+            background-color: var(--darkened-color);
+            padding: 5px;
+            border-radius: 5px;
+            width: fit-content;
+            min-width: 25%;
+        }
+
+        .section {
+            margin-bottom: 20px;
+        }
+
+        .scrollnote {
+            font-style: italic;
+            font-size: 0.9em;
+            margin-top: 20px;
+        }
+
+        .return {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+        }
+
+        select {
+            width: 75%;
+        }
+
+        textarea, input {
+            width: 75%;
+            background-color: var(--darkened-color);
+            color: var(--secondary-color);
+            border: none;
+            padding: 10px;
+            resize: none;
+        }
+        .corner {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .adminList, .userList {
+            max-height: 200px;
+            overflow-y: auto;
+          
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="main">
+        <div class="left">
+            <h1>Lobby Settings</h1>
+            <div class="lobbyInfo">
+                * Channel: <span id="channelInfo">#default</span><br>
+                * Lobby: <span id="lobbyId">9</span>
+            </div>
+
+
+        </div>
+
+        <div class="middle">
+            <h2>Mode</h2>
+            <select id="modes" name="Modes">
+                <option value="private">Private</option>
+                <option value="public">Public</option>
+                <option value="silent">Silent</option>
+            </select>
+            <h2>Password</h2>
+            <input type="password" id="password" placeholder="Enter new password...">
+            <button id="setPassword">Set Password</button>
+            <h2>Description</h2>
+            <textarea id="description" rows="4" placeholder="Enter lobby description..."></textarea>
+            <button id="setDescription">Save Description</button>
+            <h2>Rename Lobby</h2>
+            <input type="text" id="change-name" placeholder="Change lobby name...">
+            <button id="rename">Rename Lobby</button>
+        </div>
+
+        <div class="right">
+        
+            <div class="section">
+                <h2>Admins</h2>
+                <input id="admin" placeholder="Add admin...">
+                <button id="addadmin">Add</button>
+                <ul id="adminList" class="adminList"></ul>
+            </div>
+
+            <div class="section">
+                <h2>Users</h2>
+                <input id="user" placeholder="Add user...">
+                <button id="adduser">Add</button>
+                <ul id="userList" class="userList"></ul>
+            </div>
+        </div>
+    </div>
+    <div class="corner">
+        <button class="close" id="close">Close</button>
+    </div>
+
+    <script>
+        const closeButton = document.getElementById("close");
+        closeButton.addEventListener("click", function () {
+window.parent.postMessage({ type: "close", data: "close" }, "*");
+        });
+        const adminList = document.getElementById("adminList");
+        const userList = document.getElementById("userList");
+        const modesList = document.getElementById("modes");
+        const adminButton = document.getElementById("addadmin");
+        const userButton = document.getElementById("adduser");
+        const adminText = document.getElementById("admin");
+        const userText = document.getElementById("user");
+        const rename = document.getElementById("change-name")
+        const passwordInput = document.getElementById("password");
+        const setPasswordButton = document.getElementById("setPassword");
+        const descriptionTextarea = document.getElementById("description");
+        const setDescriptionButton = document.getElementById("setDescription");
+
+        document.getElementById("rename").addEventListener("click", async function () {
+            await updateLobbySettings({ "name": rename.value });
+            rename.value = "";
+
+
+        })
+
+
+        adminButton.addEventListener("click", async function () {
+            let conf = await updateLobbySettings({});
+            if (adminText.value === "") return;
+            conf.admins.push(adminText.value);
+            adminText.value = "";
+            await updateLobbySettings(conf);
+            window.location.reload();
+        });
+
+        userButton.addEventListener("click", async function () {
+            let conf = await updateLobbySettings({});
+            if (userText.value === "") return;
+            conf.users.push(userText.value);
+            userText.value = "";
+            await updateLobbySettings(conf);
+            window.location.reload();
+        });
+
+        modesList.addEventListener("change", async function () {
+            await updateLobbySettings({ mode: modesList.value });
+        });
+
+        setPasswordButton.addEventListener("click", async function () {
+            if (passwordInput.value === "") {
+                alert("Password cannot be empty.");
+                return;
+            }
+            await updateLobbySettings({ password: passwordInput.value });
+            passwordInput.value = "";
+            alert("Password updated.");
+        });
+
+        async function updateUsers() {
+            let config = await updateLobbySettings({});
+            if (config) {
+                modesList.value = config.mode;
+            }
+        }
+
+        async function main() {
+            let users = await getUsers();
+            await updateUsers();
+            await getUsername();
+            let config = await updateLobbySettings({});
+            if (config.description) {
+                descriptionTextarea.value = config.description;
+            }
+            users.admins.forEach(admin => {
+                let obj = document.createElement("li");
+                obj.innerHTML = admin;
+                obj.addEventListener("click", async function () {
+                    let conf = await updateLobbySettings({});
+                    if (obj.innerHTML !== username) {
+                        conf.admins = conf.admins.filter(item => item !== obj.innerHTML);
+                    } else {
+                        alert("You can't remove yourself!");
+                    }
+                    await updateLobbySettings(conf);
+                    window.location.reload();
+                });
+                adminList.appendChild(obj);
+            });
+
+            users.users.forEach(user => {
+                let obj = document.createElement("li");
+                obj.innerHTML = user.name;
+                obj.addEventListener("click", async function () {
+                    let conf = await updateLobbySettings({});
+                    if (obj.innerHTML !== username) {
+                        conf.users = conf.users.filter(item => item.name !== obj.innerHTML);
+                    } else {
+                        alert("You can't remove yourself!");
+                    }
+                    await updateLobbySettings(conf);
+                    window.location.reload();
+                });
+                userList.appendChild(obj);
+            });
+
+            let channel = await getChannelInfo(getCookie("lobby"), getCookie("channel"));
+            document.getElementById("channelInfo").innerText = channel.name;
+            document.getElementById("lobbyId").innerText = getCookie("lobby");
+        }
+
+        main();
+        setDescriptionButton.addEventListener("click", async function () {
+            await updateLobbySettings({ description: descriptionTextarea.value });
+            alert("Description updated.");
+        });
+    </script>
+</body>
+
+</html>

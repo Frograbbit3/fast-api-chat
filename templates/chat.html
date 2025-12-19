@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<HTML>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<script src="/static/main.js"></script>
+
+<div class="login-overlay" id="settings-container" style="display: none;">
+    <iframe name="settings" width="50%" height="65%" src="http://127.0.0.1:5000/settings" scrolling="no" marginwidth="0" marginheight="0" style="border:0px none #ffffff;border-radius: 50px;"></iframe>
+</div>
+
+<div class="login-overlay" id="login-container" style="display: none;">
+    <div class="login-container">
+        <h1>Login</h1>
+        <input id="username-part" class="username-part" placeholder="Username"></input>
+        <input id="password-part" class="password-part" placeholder="password" type="password"></input>
+        <span id="status" class="status"></span>
+        <button id="login-button" class="login-button">Login</button>
+    </div>
+</div>
+<script>
+    const passwordPart = document.getElementById("password-part");
+    const usernamePart = document.getElementById("username-part");
+    const loginButton = document.getElementById("login-button");
+    const loginContainer = document.getElementById("login-container");
+    const status = document.createElement("div");
+    status.className = "status";
+    document.querySelector(".login-container").appendChild(status);
+
+    loginButton.addEventListener("click", async () => {
+        const username = usernamePart.value;
+        const password = passwordPart.value;
+        const success = await loginAPI(username, password);
+        console.log(success)
+        if (success) {
+            status.style.display = "none";
+            loginContainer.style.display = "none";
+            window.location.reload();
+        } else {
+            status.innerHTML = "Wrong password!"
+            status.style.color = "red"
+        }
+    });
+    async function processLoginTab() {
+        let token = await getUsername();
+        if (!token) {
+            loginContainer.style.display = "flex"
+        }
+
+    }
+    processLoginTab();
+
+    window.addEventListener("message", function (event) {
+        if (event.data.type === "close") {
+            document.getElementById("settings-container").style.display = "none";
+        }
+    });
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<head>
+    <link rel="stylesheet" href="/static/base.css">
+    <link rel="icon" type="image/png" id="icon" href="/static/icon.png">
+</head>
+<div id="fireworks"
+    style="position: fixed;top: 0;left: 0;width: 100vw;height: 100vh;pointer-events: none;z-index: 9999;"></div>
+
+<body id="chat" class="chmt" style="">
+    <div class="header">
+        <div class="headeritems" id="hdim">
+    <input type="color" id="primary">
+    <input type="color" id="secondary">
+
+
+            <div class="public" onclick="location.href='/find'">
+                <p class="public-text">Lobbies</p>
+            </div>
+            <h2 id="titled" class="titled">Chat</h1>
+
+                <h2 class="profile_text" id="pfptext">%s</h2>
+                <div id="pfp">
+
+                </div>
+        </div>
+    </div>
+    <div class="chatm">
+        <ul id="messageList" class="msglist">
+        </ul>
+    </div>
+    <input type="file" id="fileInput" class="fileInput" style="display: none;" spellcheck="false">
+    <div class="messageInput" id="msginput">
+        <button id="upload" class="uploadButton">+</button>
+        <textarea class="messageBox" id="messageBox" placeholder="Send a message..."></textarea>
+        <button id="stopReply" class="uploadButton" style="display: none;">X</button>
+        <button class="sendButton" id="sendButton" onclick="send()">→</button>
+    </div>
+    
+</body>
+<div class="lobby-searcher"><iframe name="myiFrame" width="100%" height="100%" src="find" scrolling="no" marginwidth="0"
+        marginheight="0" style="border:0px none #ffffff;"></iframe></div>
+<div class="sidebar" id="sidebar">
+    <h3 class="channels-name"></h3>
+    <button onclick="handleCreateAndProcess()" class="channel-button" id="channel-button">+</button>
+    <ul id="channelList"></ul>
+
+    <div class="bottom-part">
+        <div class="profile-info" id="profile-info">
+            <img src="/static/default.jpg" class="profile_photo" id="photophoto">
+        </div>
+        <div class="text">
+            <span class="username">Logged into USER</span>
+            <span class="version">v1.5.b</span>
+
+        </div>
+        <img src="/static/settings.png" class="lobbysettings" onclick="            document.getElementById('settings-container').style.display = 'none';"
+            id="lobbysettings"></img>
+    </div>
+    <script src="/static/chat.js"> </script>
+    <script>
+        async function thing() {
+            let configs = await getServerConfig();
+            let chan = getCookie("channel");
+            let channelData = (await getChannelInfo(getCookie("lobby"), -1))[chan];
+            console.log(channelData);
+            document.querySelector(".username").innerHTML = "@" + username
+            document.querySelector(".version").innerHTML = configs.version
+
+        }
+        thing();
+function restoreTheme() {
+    let primary = decodeURIComponent(getCookie("theme1"));
+    let secondary = decodeURIComponent(getCookie("theme2"));
+
+    if (primary) {
+        document.getElementById("primary").value = primary;
+        document.documentElement.style.setProperty("--primary-color", primary);
+       
+    }
+    if (secondary) {
+        document.getElementById("secondary").value = secondary;
+        document.documentElement.style.setProperty("--second-color", secondary);
+        
+    }
+}
+function setThemeVarInAllFrames(varName, value) {
+    // Set in parent
+    document.documentElement.style.setProperty(varName, value);
+    
+    // Set in all same-origin iframes
+    document.querySelectorAll("iframe").forEach(frame => {
+        try {
+            frame.contentDocument.documentElement.style
+                .setProperty(varName, value);
+        } catch (e) {
+            // Ignore cross-origin frames
+        }
+    });
+}
+// Event listeners
+document.getElementById("primary").addEventListener("input", function () {
+    setCookie("theme1", this.value);
+    setThemeVarInAllFrames("--primary-color", this.value);
+});
+document.getElementById("secondary").addEventListener("input", function () {
+    setCookie("theme2", this.value);
+    setThemeVarInAllFrames("--second-color", this.value);
+    //setThemeVarInAllFrames("--darkend-color", "color-mix(in srgb, var(--second-color) 80%, black);");
+});
+
+// Run on page load
+restoreTheme();
+
+
+    </script>
+
+
+</HTML>

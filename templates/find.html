@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<link rel="stylesheet" href="/static/base.css">
+<script src="/static/main.js"></script>
+
+<head>
+  <style>
+    .lobbyGrid {
+      list-style-type: none;
+      padding: 0;
+      margin: 2px;
+      max-height: 800px;
+      height: 100%;
+      z-index: 0;
+      padding-bottom: 50px;
+      overflow-y: hidden;
+      /* or scroll */
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+
+    }
+
+    body {
+      background-color: var(--darkened-color);
+
+    }
+
+    .listing {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      /* horizontal center */
+      padding: 5px;
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+      font-size: 25px;
+      min-height: 100px;
+      background-color: var(--primary-color);
+      margin: 5px 0;
+      border-radius: 8px;
+      border: var(--darkened-primary) 1px;
+      cursor: pointer;
+      transition: font-size 0.125s;
+    }
+
+    .listing span {
+      font-size: 18px;
+      margin-top: 5px;
+      text-align: center;
+    }
+
+    .listing li {
+      text-align: left;
+      justify-self: flex-start;
+      align-self: flex-start;
+    }
+
+    .listing:hover {
+      font-size: 30px;
+      background-color: var(--darkened-primary);
+    }
+
+    button {
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+      font-size: 20px;
+      border-radius: 3px;
+      margin: 25px;
+      background-color: var(--primary-color);
+      width: 25%;
+      text-align: center;
+    }
+
+    button:hover {
+      background-color: var(--darkened-primary);
+    }
+
+    span {
+      font-size: 20px;
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+
+    .button-holder {
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+      justify-content: center;
+
+      position: fixed;
+      /* Make it hover over everything */
+      bottom: 0;
+      /* Stick it to the bottom */
+      left: 0;
+      width: 100%;
+      /* Span full width */
+      background-color: var(--darkened-color);
+      /* Optional: semi-transparent bg */
+      z-index: 999;
+      /* Make sure it's on top */
+      padding: 0px;
+    }
+
+    .search-header {
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+      justify-content: space-between;
+      padding: 5px;
+      background-color: var(--darkened-color);
+      color: black;
+    }
+
+    .search {
+      color: black;
+      background-color: var(--darkened-color);
+    }
+
+    .search h3 {
+      color: white;
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+      font-size: 21px;
+      text-align: center;
+    }
+
+    .search-header textarea {
+      width: 100%;
+      height: 50px;
+      font-size: 20px;
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+      padding: 5px;
+      border-radius: 5px;
+      border: none;
+      background-color: rgba(255, 255, 255, 0.8);
+    }
+    .add-button {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 15px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .add-button:hover {
+      background-color: var(--darkened-primary);
+    }
+  </style>
+</head>
+
+<body>
+      <button class="add-button">Add</button>
+  <div class="search">
+    <h3>Search</h3>
+    <div class="search-header">
+      <textarea id="searchInput" placeholder="Search lobbies by name or description..."></textarea>
+
+    </div>
+  </div>
+
+  <ul class="lobbyGrid" id="lobbyGrid"></ul>
+
+  <div class="button-holder">
+    <button id="prevPage">←</button>
+    <span id="pageIndicator"></span>
+    <button id="nextPage">→</button>
+  </div>
+
+  <script>
+    async function main() {
+
+      const config = await getServerConfig();
+      const lobbyGrid = document.getElementById("lobbyGrid");
+      const prevBtn = document.getElementById("prevPage");
+      const nextBtn = document.getElementById("nextPage");
+      const pageIndicator = document.getElementById("pageIndicator")
+      const PAGE_SIZE = 6;
+      const searchInput = document.getElementById("searchInput");
+
+      searchInput.addEventListener("input", async () => {
+        loadPage(0);
+      })
+      console.log(config);
+      const totalLobbies = parseInt(config.lobby_count); // adjust this as needed
+      let currentPage = 0;
+      const inIframe = window.self !== window.top;
+
+      function makeLobbyElement(name, lobby, mode, playerCount, des) {
+        const li = document.createElement("li");
+        li.className = "listing";
+        li.textContent = name.replace("%s", lobby);
+        const descr = document.createElement("span")
+        descr.textContent = des
+        //descr.style.justifySelf = "flex-start"
+        li.appendChild(descr)
+        if (mode === "private") {
+          li.style.backgroundColor = "gray";
+          li.style.color = "black";
+          li.style.borderColor = "black";
+        } else {
+        }
+        li.onclick = () => {
+          changeLobby(lobby);
+          if (!inIframe) {
+            window.location.assign("/chat");
+          } else {
+            window.parent.location.reload();
+          }
+        };
+        return li;
+      }
+
+      async function loadPage(pageNum) {
+        lobbyGrid.innerHTML = "";
+        const start = pageNum * PAGE_SIZE;
+        let end = Math.min(start + PAGE_SIZE, totalLobbies);
+        let lobbies;
+        if (searchInput.value.trim() !== "") {
+          lobbies = await searchLobbies(searchInput.value.trim());
+          end = totalLobbies;
+        } else {
+          lobbies = await getLobbyInfo(-1, start, end);
+        }
+
+        prevBtn.disabled = true;
+        nextBtn.disabled = true;
+        for (let i = start; i < end; i++) {
+          try {
+            const lobbyData = lobbies[i];
+            const info = lobbyData;
+            if (!info.real) { continue }
+            const lobbyElem = makeLobbyElement(info.name, i, info.mode, info.user_count, info.description);
+            lobbyGrid.appendChild(lobbyElem);
+          } catch (e) {
+            console.warn(`Skipping lobby ${i} due to error`, e);
+          }
+        }
+        if (lobbies.length === 0 || lobbyGrid.children.length === 0) {
+          const noLobbies = document.createElement("h1");
+          noLobbies.className = "listing";
+          noLobbies.textContent = "No lobbies found";
+          lobbyGrid.appendChild(noLobbies);
+        }
+        pageIndicator.style.color = "#FFFFFF"
+        pageIndicator.textContent = `${pageNum + 1}/${Math.ceil(totalLobbies / PAGE_SIZE)}`;
+        prevBtn.disabled = pageNum === 0;
+        nextBtn.disabled = end >= totalLobbies;
+      }
+
+      prevBtn.addEventListener("click", () => {
+        if (currentPage > 0) {
+          currentPage--;
+          loadPage(currentPage);
+        }
+      });
+
+      nextBtn.addEventListener("click", () => {
+        if ((currentPage + 1) * PAGE_SIZE < totalLobbies) {
+          currentPage++;
+          loadPage(currentPage);
+        }
+      });
+
+      // Load first page on start
+      loadPage(currentPage)
+    }
+    main();
+  </script>
+
+</body>
+
+</html>

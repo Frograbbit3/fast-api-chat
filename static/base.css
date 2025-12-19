@@ -1,0 +1,560 @@
+.msglist {
+    align-items:flex;
+    overflow-y: scroll;
+    max-height: 92%;
+    flex-direction: column;
+    
+    display: flex;
+    align-items: flex-start;
+    scrollbar-width: none;
+    z-index: 1;
+    position: relative;
+    box-sizing: border-box;
+    padding-right: 15px;
+    top: 0;
+    width: calc(100% - var(--sidebar-width) - calc(var(--finder-width) ));
+    left: var(--sidebar-width);
+    transition: 0.25s ease-in-out;
+}
+button {
+    border-color: rgb(0,0,0,1);
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  all:unset;
+  background-color: #ffffff;
+  user-select: none;
+  transition: 0.05s linear;
+}
+button:hover {
+    background-color: #dddd;
+}
+
+.channel-button {
+    width: 100%;
+    height: 60px;
+    border-radius: 5px;
+    background-color: var(--primary-color);
+    font-size: 14px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-align: center;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+:root {
+    --sidebar-width: 250px;
+    --primary-color: #bb86fc;
+    --second-color: #754242;
+    --finder-width: 250px;
+    --darkened-color: color-mix(in srgb, var(--second-color) 80%, black);
+    --darkened-primary: color-mix(in srgb, var(--primary-color) 80%, black);
+}
+.msglist::-webkit-scrollbar {
+    display: none;             
+}
+
+.reply-text {
+    font-size: 11px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.reply-img {
+    width: 16px;
+    height:16px;
+    border-radius: 25px;
+}
+
+.reply {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 6px;
+}
+.channels-name {
+    border-bottom: 2px dashed black;
+    font-size: 16px !important;
+    text-align: left;
+}
+/* Add to base.css */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: var(--sidebar-width);
+    height: 100vh;
+
+    z-index: 100;
+    padding: 20px 10px 10px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    backdrop-filter: blur(3px);
+    transition: transform 0.25s ease-in-out, width 0.25s ease-in-out, opacity 0.25s;
+    transform: translateX(0);/*translateX(calc(-1 * (var(--sidebar-width) - 15px))); */ /* Collapsed offset */
+    background-color: var(--darkened-color);
+    
+}
+.sidebar h3 {
+    margin-top: 0;
+    font-size: 1.2em;
+    text-align: center;
+}
+
+
+.lobby-searcher {
+    position: fixed;
+    z-index: 99;
+    top: 0;
+    right: 0;
+        width: var(--finder-width);
+    height: 100vh;
+    background: rgba(204, 204, 204, 0.5);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    backdrop-filter: blur(3px);
+    transition: transform 0.25s ease-in-out, width 0.25s ease-in-out, opacity 0.25s;
+    transform:translateX(0);
+    
+
+}
+#channelList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    min-height: 74%;
+    overflow-y: auto;
+}
+
+span {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+
+.bottom-part {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: column;
+  position: fixed;
+  bottom: 5%;
+  width: 85%;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profile_photo {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  margin-bottom: 4px;
+}
+
+.text {
+    display: flex;
+    flex-direction: column;
+}
+
+.username {
+  text-align:center;
+  font-size: 14px;
+  
+}
+
+.version {
+  text-align:center;
+  font-size: 20px;
+
+}
+#channelList li {
+    padding: 8px 12px;
+    margin-bottom: 6px;
+    border-radius: 4px;
+    height: 50px;
+    font-size: 20px;
+    cursor: pointer;
+    background-color: var(--primary-color);
+    transition: background 0.15s;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.selected-channel {
+    font-weight: bold;
+    font-size: 20px;
+}
+#channelList li:hover {
+    background: var(--darkened-primary);
+    font-weight: bold;
+}
+.headeritems {
+    display: flex;
+    align-items: center; /* Center items vertically */
+    flex-direction: row;
+    height: auto;
+    position: relative;
+    width: 75%;
+    justify-content: space-between; /* This spreads items across the container */
+    border-radius: 5px;
+    transition: 0.25s ease-in-out;
+    background:rgba(225, 225, 225, 0.5);
+    backdrop-filter: blur(3px);
+    z-index: 99999999999;
+}
+
+.lobbysettings {
+    margin-left: 1%;
+    width: 32px;
+    height: 32px;
+    transition: 0.125s;
+    scale: 1;
+}
+
+
+.lobbysettings:active {
+    scale: 1.2;
+}
+
+.header {
+    display: flex;
+    align-items: center;        /* Vertically center children */
+    justify-content: center;    /* Horizontally center children */              /* Example height */
+    transition: 0.25s;
+    position: relative;
+    transform: translateY(-100%);
+    z-index: 999999999999;
+}
+
+.header.show {
+    transform: translateY(0); /* Shows the bar */
+  }
+.rightHeader flex {
+    flex-direction: column;
+    align-items: center; /* Align children to the right */
+    margin-left: auto; /* Push to the right */
+}
+
+.profile_photo {
+    width: auto;
+    height: 64px; /* Adjust as needed */
+    margin-top: 5px; /* Add some space between text and image */
+    margin-right: 5px;
+    /*margin-left: 5px*/
+}
+
+.profile_text {
+    margin: 0; /* Remove default margins */
+    padding: 0; /* Remove padding */
+    text-align: right; /* Right-align the text */
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    width: 100%; /* Ensure text takes full width of container */
+    display: block; /* Force block display */
+}
+
+.titled {
+    width: fit-content;
+    white-space: nowrap; 
+    text-overflow: ellipsis;
+    margin-left: 10px;
+}
+
+p {
+    color:black;
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+}
+h1 {
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+}
+.public {
+    /* Remove conflicting positioning */
+    position: absolute;
+    top: 50%;
+    left: 45%;
+    transform: translate(-50%, -50%);
+    
+    /* Clean up other styling */
+    padding: 5px 10px;
+    margin: 10px 5px;
+    border-radius: 4px;
+    width: 250px;
+    text-align: center;
+    font-size: 50px;
+    height: 100%; /* Changed from 100% to auto */
+    z-index: 10; /* Add z-index to ensure it's above other elements */
+    transition: 0.125s;
+}  
+
+.public-text {
+    position: relative;
+    margin: 0; /* Remove default margins */
+}
+
+.public:hover {
+    background-color: var(--second-color);
+}
+
+.public:active {
+    background-color: var(--primary-color);
+}
+
+.privateMessage {
+    background-color: rgba(255,255,255 0.5) !important;
+    opacity: 0.5 !important;
+}
+
+.center {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+h2 {
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+}
+.chatm {
+    position: absolute;
+    top: 0;
+    width: calc(100%);
+    height: calc(100vh - 56px); /* 56px = height of .messageInput */
+    min-height: 0;
+    z-index: 1;
+    overflow-y: auto;
+}
+.uploadBar {
+    width: 100%
+}
+
+
+.embed {
+  max-width: 400px;       /* Limits max width */
+  max-height: 300px;      /* Optional max height if you want */
+  overflow: hidden;       /* Cut off anything that’s too big */
+  border: 1px solid #ccc;
+  padding: 10px;
+  background: #f9f9f9;
+  border-radius: 5px;
+  margin: 8px 0;
+  box-sizing: border-box;
+}
+
+.embed-text {
+  font-size: 0.85em;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  color: #555;
+}
+.embed img.embed-image {
+  max-width: 100%;        /* Make sure images never overflow */
+  height: auto;
+  display: block;
+  margin: 8px 0;
+  object-fit: contain;    /* Keeps image aspect ratio */
+}
+.messageInput {
+    display: flex;
+    padding: 5px 15px;
+    position: fixed;
+    bottom: 3%;
+    width: 65%;
+    left: 18%;
+    background: var(--primary-color);
+    z-index: 1000;
+    box-sizing: border-box;
+    margin: 0;
+    backdrop-filter: blur(3px);
+    border-radius: 20px;
+}
+.messageBox {
+    flex : 1;
+    margin-top: 2px;
+    max-height: 150px;
+    margin-right: 5px;
+    overflow-y: scroll;
+    resize:none;
+    border-radius: 10px;
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    height:fit-content;
+    scrollbar-width: none;
+    
+    
+}
+.messageBox::-webkit-scrollbar {
+    display: none;
+}
+ .channelItem {
+    padding: 8px 12px;
+    margin-bottom: 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: var(--primary-color);
+    transition: background 0.15s;
+    font-size: 0.7em;
+}
+
+.channelItem:hover {
+    background: #b3e0ff;
+    font-weight: bold;
+}
+
+.channelItem p {
+    margin: 0; /* Remove default margins */
+    padding: 0; /* Remove padding */
+    text-align: center; /* Center-align the text */
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    width: 100%; /* Ensure text takes full width of container */
+    display: block; /* Force block display */
+}
+h3 {
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+p {
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+.mention {
+    background-color: rgb(183, 183, 31);
+    border-radius: 5px;
+    color: black;
+    font-weight: bold;
+    padding: 2px 4px;
+    border-radius: 3px;
+}
+input {
+    resize:none;
+    border-radius: 4px;
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+}
+.sendButton {
+    padding: 6px 3px;
+    border-radius: 50px;
+    font-size: 30px;
+}
+
+body {
+    background-color: var(--second-color);
+    min-height: 800px;
+    overflow: hidden;
+    border-color: rgb(0,0,0,1);
+}
+
+.messageObj {
+    background-color:whitesmoke;
+    padding: 2px 5px;
+    border-radius: 5px;
+    margin: 2px;    
+    width: fit-content;
+    font-size: 14px;
+    
+
+}
+.myMessages {
+    align-self: flex-end;
+    
+}
+.userOb {
+    margin: 5px;
+    border-radius: 2px; 
+    display: none;
+}
+.uploadButton {
+    border-radius: 50px;
+    margin: 5px;
+    width: 25px;
+    text-align: center;
+    font-size:30px;
+}
+
+.fileInput {
+    display: none;
+}
+
+img {
+    transition: 0.25s;
+    width: auto;
+    height:128px;
+    align-self: left;
+    aspect-ratio: auto;
+}
+
+
+
+
+
+
+.login-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 999999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.login-container {
+    top:25%;
+    left:25;
+    width:35%;
+    height:35%;
+    background-color: var(--darkened-color);
+    border-radius: 25px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.login-container h1 {
+    position: fixed;
+    top:32%;
+    align-self: center;
+}
+
+.status {
+    position: fixed;
+    top: 57%;
+    right:45%;
+    color: white;
+    z-index: inherit;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+.username-part {
+    position: fixed;
+    top: 40%;
+    right: 40%;
+    width: 20%;
+    border-radius: 5px;
+    height: 5%;
+    text-align: center;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 25px;
+}
+
+.password-part {
+    position: fixed;
+    top: 50%;
+    right: 40%;
+    width: 20%;
+    border-radius: 5px;
+    height: 5%;
+    text-align: center;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 25px;
+}
+
+.login-button {
+    position: fixed;
+    top: 60%;
+    right: 40%;
+    width: 20%;
+    border-radius: 5px;
+    height: 5%;
+    text-align: center;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 25px;
+}
