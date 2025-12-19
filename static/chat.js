@@ -1,7 +1,6 @@
 const button = document.getElementById("sendButton");
 const textBox = document.getElementById("messageBox");
 const messageList = document.getElementById("messageList");
-const lobbyLabel = document.getElementById("titled");
 const opener = document.getElementById("upload");
 const file = document.getElementById("fileInput");
 const photo = document.getElementById("photophoto");
@@ -19,6 +18,7 @@ const publi = document.getElementById("public");
 const icon = document.getElementById("icon");
 const settingsIcon = document.getElementById("lobbysettings");
 const usernameText = document.getElementById("usernameText");
+const replyButton = document.getElementById("stopReply");
 let max = 10;
 let msgList = null;
 let currentChannelId = null; // Track the current channel
@@ -132,6 +132,34 @@ function scrollBottom() {
         document.scrollTop = 0;
     })
 }
+
+function restoreTheme() {
+    let primary = decodeURIComponent(getCookie("theme1"));
+    let secondary = decodeURIComponent(getCookie("theme2"));
+
+    if (primary) {
+        document.documentElement.style.setProperty("--primary-color", primary);
+       
+    }
+    if (secondary) {
+        document.documentElement.style.setProperty("--second-color", secondary);
+        
+    }
+}
+function setThemeVarInAllFrames(varName, value) {
+    // Set in parent
+    document.documentElement.style.setProperty(varName, value);
+    
+    // Set in all same-origin iframes
+    document.querySelectorAll("iframe").forEach(frame => {
+        try {
+            frame.contentDocument.documentElement.style
+                .setProperty(varName, value);
+        } catch (e) {
+            // Ignore cross-origin frames
+        }
+    });
+}
 //Functions / Hellscape
 async function handleCreateAndProcess() {
     await createChannel(lobby);
@@ -220,7 +248,7 @@ async function refresh(full = false, msgs = null, appendToTop = false) {
         colored = null;
         high = false;
         value.message = decrypt(value.message);
-        if ((key - count) > 0) {
+        if ((parseInt(key) - count) > 0) {
             let colored = "#000000";
             for (let us of users) {
                 
@@ -232,7 +260,7 @@ async function refresh(full = false, msgs = null, appendToTop = false) {
 
                 const ping = "@" + usLower;
                 const high = value.message.toLowerCase().includes(ping) && usLower === usernameLower;
-                console.log("High: " + high + " User: " + usLower + " userState.username: " + usernameLower, "users", users, "ping", ping, "message", value.message.toLowerCase());
+                //console.log("High: " + high + " User: " + usLower + " userState.username: " + usernameLower, "users", users, "ping", ping, "message", value.message.toLowerCase());
 
                 if (high) {
                     value.message = value.message.replace(regex, (matched) => {
@@ -399,9 +427,6 @@ let lobbyConfig;
 
 //Function to show the settings window
 async function showSettingsWindow() {
-    lobbyConfig = await getLobbyInfo(lobby);
-
-
     //check if we are NOT admin in this lobby
     if (!userState.lobby_admin) {
         //we'll fix this later, but for now just alert
@@ -444,7 +469,9 @@ async function start() {
     }
     settingsIcon.addEventListener("click", showSettingsWindow);
     usernameText.innerText= `@${userState.username}`;
+    restoreTheme();
     //start other shit
+    await processChannels();
     setInterval(main, 100);
     setInterval(looped, 1000, false);
     setInterval(processChannels, 5000);
@@ -452,59 +479,47 @@ async function start() {
 }
 
 async function processChannels() {
-    let lobbyConfig = await getLobbyInfo(lobby);
-    lobbyLabel.innerHTML = lobbyConfig.name.toString().replace("%s", lobby);
-    const ch = await getChannelInfo(lobby, -1);
-    currentChannelId = parseInt(getCookie("channel")); // Get current channel from cookie or default to null
     const channelSelect = document.getElementById("channelList");
-    channelSelect.innerHTML = ""; // Clear previous
-    document.querySelector(".channels-name").textContent = lobbyConfig.name;
-    let i = -1;
-    Object.entries(ch).forEach(([key, value]) => {
-        i++;
+
+    //set html shit up
+    channelSelect.innerHTML = "";
+    document.querySelector(".channels-name").textContent = lobbyState.name;
+
+    ///oh god.
+    Object.entries(lobbyState.channels).forEach(([key, value]) => {
         const li = document.createElement("li");
         li.className = "channelItem";
         li.id = `channel-${key}`;
         li.textContent = value.name;
         // Highlight if this is the current channel
-        if (i == currentChannelId) {
+        if (parseInt(key) == currentChannelId) {
             li.classList.add("selected-channel");
         }
 
         li.addEventListener("click", async () => {
             currentChannelId = parseInt(key); // Update current channel
             setCookie("channel", currentChannelId);
-            //chgchg(lobby)
-            chattable = await isChattable();
+            
+            lobbyState = await getLobbyObject();
             await connect();
             refresh(true, null)
 
             // Update active class
             document.querySelectorAll(".channelItem").forEach(el => el.classList.remove("selected-channel"));
             li.classList.add("selected-channel");
-
-            refresh(true);
         });
         channelSelect.appendChild(li);
     });
 }
-processChannels();
-const pfptext = document.getElementById("pfptext");
-
-function chgchg(newchg) {
-    changeLobby(lobby, newchg);
-    refresh(true);
-}
 
 
-const replyButton = document.getElementById("stopReply");
+
 replyButton.addEventListener("click", () => {
     replyID = -1;
     replyMessage = {};
 });
 
 function looped(loop) {
-    lobby = changeLobby(-1);
     if (!chattable) {
         textBox.disabled = true;
         textBox.placeholder = "You do not have permission to speak in this channel."

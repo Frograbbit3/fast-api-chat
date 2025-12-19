@@ -1,0 +1,64 @@
+.notification span {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    padding-left: 50px;
+    padding-top: 0px;
+    height: 100%;
+    display: block;
+}
+
+.notification-close {
+    background-color: var(--second-color);
+    padding: 4px;
+    border-radius: 5px;
+    user-select: none;
+    align-self: flex-end;
+}
+.close-icon {
+    height: 100%;
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+.notification .notif-row .title {
+    font-weight: bold;
+    align-self: flex-end;
+    height: fit-content;
+    background-color: var(--primary-color);
+    border-bottom-style: dotted;
+}
+
+
+.notification .notif-row .notification-content {
+    align-self: flex-end;
+}
+.notification-close:hover {
+    background-color: whitesmoke;
+}
+.notification p {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    color: red;
+    display: block;
+    justify-self: flex-start;
+}
+
+.notif-row {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex-direction: row-reverse;
+}
+.notification {
+  position: absolute;
+  top: 10vh;
+  left: 50vw;
+  transform: translateX(-50%);
+  background-color: var(--primary-color);
+  padding: 20px;
+  font-size: 1vw;
+  padding-bottom: 50px;
+  border-radius: 20px;
+  box-shadow: 8px 6px 2px 5px rgba(0,0,0,0.3);
+  min-width: 30vw;
+  max-width: 30vw;
+  align-items: flex-start;
+}
