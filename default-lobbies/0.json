@@ -1,0 +1,73 @@
+{
+  "config": {
+    "name": "Lobby %s",
+    "users": [
+      {
+        "name": "System",
+        "roles": []
+      }
+    ],
+    "admins": [
+      "System"
+    ],
+    "mode": "public",
+    "user_count": 1,
+    "admin_count": 1,
+    "roles": [
+      {
+        "name": "Testing role 1",
+        "color": "#FF0000",
+        "perms": [
+          2,
+          1,
+          3
+        ]
+      }
+    ],
+    "description": "",
+    "real": false,
+    "save": true
+  },
+  "channels": [
+    {
+      "name": "#general",
+      "type": "text",
+      "id": 7.988341174258294e+30,
+      "logs": [
+        {
+          "message": "pIPT4UYY6oK6gQ7HryTnTn/2ehiUI6XPcqsKUkC5QVEX8vjlUSCy1ggi7FOMzwZG",
+          "user": "m",
+          "time": 1766736372,
+          "tp": "text",
+          "file": "",
+          "channel": 0,
+          "reply": null,
+          "profile_photo": "/static/default.jpg",
+          "allowed_users": []
+        },
+        {
+          "message": "cdxs0AT+f4N2jvLn8kh0aw==",
+          "user": "m",
+          "time": 1766736377,
+          "tp": "text",
+          "file": "",
+          "channel": 0,
+          "reply": null,
+          "profile_photo": "/static/default.jpg",
+          "allowed_users": []
+        },
+        {
+          "message": "BcwlIxoiqKHbThXTITafmw==",
+          "user": "m",
+          "time": 1766736382,
+          "tp": "text",
+          "file": "",
+          "channel": 0,
+          "reply": null,
+          "profile_photo": "/static/default.jpg",
+          "allowed_users": []
+        }
+      ]
+    }
+  ]
+}

@@ -4,6 +4,7 @@ saves/
 saves
 *.lobby
 logins.json
+**/logins.json
 *.pyc
 **/__pycache__/
 **/*.pyc
