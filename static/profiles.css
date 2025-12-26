@@ -3,3 +3,45 @@
 /* --var(--second-color) */
 /* --var(--darkened-color) */
 /* --var(--darkened-primary) */
+
+body {
+    background-color: var(--primary-color);
+}
+
+div {
+    background-color: var(--second-color);
+    margin: 10px;
+    padding: 10px;
+}
+
+.userInfoBox {
+    background-color: white;
+    margin: 10px;
+    padding: 10px left, 10px right;
+}
+
+#user-info-USER {
+    height: 100%;
+    display:block;
+}
+
+#user-info-USER p {
+    font-size: 40px;
+    font-weight: bold;
+    margin: 0px;
+}
+
+.pfp {
+    border-radius: 50%;
+    padding: 0px;
+}
+
+#pfp-main {
+    width: 100px;
+    height: 100px;
+}
+
+#profile-side {
+    width: 150px;
+    height: 150px;
+}
