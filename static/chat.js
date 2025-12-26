@@ -244,10 +244,10 @@ async function refresh(full = false, msgs = null, appendToTop = false) {
         if (!users.includes(current.user)) users.push(current.user);
     }
     let draw_ui = true;
-    Object.entries(messages).forEach(async ([key, value]) => {
+    for (const [key, value] of messages.entries()) {
         colored = null;
         high = false;
-        value.message = decrypt(value.message);
+        let content = decrypt(value.message);
         if ((parseInt(key) - count) > 0) {
             let colored = "#000000";
             for (let us of users) {
@@ -259,11 +259,11 @@ async function refresh(full = false, msgs = null, appendToTop = false) {
                 const regex = new RegExp(`@${us.toString()}`, 'ig');
 
                 const ping = "@" + usLower;
-                const high = value.message.toLowerCase().includes(ping) && usLower === usernameLower;
-                //console.log("High: " + high + " User: " + usLower + " userState.username: " + usernameLower, "users", users, "ping", ping, "message", value.message.toLowerCase());
+                const high = content.toLowerCase().includes(ping) && usLower === usernameLower;
+                //console.log("High: " + high + " User: " + usLower + " userState.username: " + usernameLower, "users", users, "ping", ping, "message", content.toLowerCase());
 
                 if (high) {
-                    value.message = value.message.replace(regex, (matched) => {
+                    content = content.replace(regex, (matched) => {
                         const userColor = getUserColor(us.toString());
                         return `<span class="mention" style="color: ${userColor}; background-color: rgba(0,0,0,0.1); padding: 2px 4px; border-radius: 4px;">${matched.toLowerCase()}</span>`;
                     });
@@ -289,7 +289,7 @@ async function refresh(full = false, msgs = null, appendToTop = false) {
             const avatar = document.createElement("img");
             const reactions = document.createElement("div");
 
-            let message = decrypt(value["message"]);
+            let message = content;
             messageBoxed.addEventListener('click', (event) => {
                 replyID = Array.from(msgList).indexOf(value);
                 replyMessage = value
@@ -297,32 +297,13 @@ async function refresh(full = false, msgs = null, appendToTop = false) {
 
             messageBoxed.style.backgroundColor = high ? "#faf0ca" : "whitesmoke";
             messageBoxed.classList.add("messageObj");
-            reactions.style.height = "fit-content"
-            reactions.style.display = "inline-flex"
-            reactions.style.width = "fit-content";
-            reactions.style.justifyContent = "flex-end";
-            reactions.style.alignItems = "center"
-            reactions.style.flexDirection = "row";
-            reactions.style.backgroundColor = "whitesmoke"
-            reactions.style.alignSelf = "flex-end"
-            reactions.style.borderRadius = "5px"
-            reactions.className = "reactions";
+            reactions.className = "reactions-holder";
             let reactionString = "";
             for (let reacted in value.reactions) {
                 let react = value.reactions[reacted]
                 let reactionHolder = document.createElement("div");
-                reactionHolder.style.backgroundColor = "#E1E1E1"
-                reactionHolder.style.width = "25px";
-                reactionHolder.style.margin = "5px"
-                reactionHolder.style.height = "25px"
-                reactionHolder.style.display = "inline-flex"
-                reactionHolder.style.justifyContent = "flex-start"
-                reactionHolder.style.borderRadius = "4px"
+                reactionHolder.className = "reaction"
                 let re = document.createElement("p")
-                re.style.fontSize = "18px"
-                re.innerHTML = react;
-                re.style.margin = "0px 0px"
-
                 reactionHolder.appendChild(re);
                 reactions.appendChild(reactionHolder)
 
@@ -330,17 +311,10 @@ async function refresh(full = false, msgs = null, appendToTop = false) {
 
             holder.style.display = "flex"
             avatar.src = value["profile_photo"]
-            avatar.style.height = "32px"
-            avatar.style.width = "32px"
-            avatar.style.alignSelf = "flex-end"
-            avatar.style.padding = "2px 2px"
-            avatar.style.borderRadius = "20px"
+            avatar.className="avatar-photo"
             photophoto.style.borderRadius = "20px"
             usernameItem.innerHTML = "<strong>" + value.user + "</strong>"
-            usernameItem.style.fontSize = "17px"
-            usernameItem.style.alignSelf = "flex-start"
-            usernameItem.style.padding = "-20px 40px"
-            usernameItem.style.margin = "4px 10px"
+            usernameItem.className = "username-text"
             if (colored) {
                 usernameItem.style.color = colored;
             }
@@ -399,8 +373,7 @@ async function refresh(full = false, msgs = null, appendToTop = false) {
             }
         }
 
-    });
-
+    };
 }
 
 let p;

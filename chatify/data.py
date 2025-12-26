@@ -4,8 +4,8 @@ import base64
 import os
 import json
 from . import security as secure
-from . import config, common
-from .shared import chatLogs, logins, manager
+from . import config
+from .shared import logins
 lobby_manager = None
 config.init()
 lobbyCount = int(config.configuration["GENERAL"]["lobby-count"])
@@ -24,7 +24,7 @@ def resizeb64(image_data, isBase64=True, size=(0,0), user=""):
             img = img.convert('RGB')
         if size[0] > 0:
             img = img.resize(size)
-        buffered = BytesIO()
+        BytesIO()
         fileName= str(secure.hash(image_data)) + ".jpg"
         if user != "":
             if not os.path.exists(os.path.join(BASE_DIR, "static", "uploads", user)):
@@ -69,7 +69,6 @@ def save_messages(fancy=False, lobby=-1):
         with open("logins.json", "w") as m:
             #print("Saved logins!")
             json.dump(logins, m)
-        fancy = True
         lobby = int(lobby)
         #print(chatLogs)
         '''

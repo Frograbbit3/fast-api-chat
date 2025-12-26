@@ -3,7 +3,6 @@ import re
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin 
-import html
 def apply_text_coloring(text):
     regex = r"\[\[(#[0-9A-Fa-f]{6}|[a-zA-Z]+)\]\](.*?)\[\[\1\]\]"
 
@@ -34,10 +33,6 @@ def format_message(message):
 
     return message
 
-import requests
-from bs4 import BeautifulSoup
-from urllib.parse import urljoin
-import html
 
 def get_embed(url):
     try:

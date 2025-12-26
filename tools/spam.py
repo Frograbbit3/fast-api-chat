@@ -1,7 +1,4 @@
 import chatify.api as api
-import chatify.security as secure
-import chatify.data as data
-import chatify.config as config
 
 
 for l in range(50):

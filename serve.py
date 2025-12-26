@@ -1,8 +1,8 @@
-import re
 import os
 import random
-import json, time
-from chatify.shared import key_string, iv, max_size, chatLogs, lobbyCount, online_users, logins, _SYSHASH, init, manager, ver, dprint
+import json
+import time
+from chatify.shared import key_string, iv, max_size, lobbyCount, logins, _SYSHASH, init, manager, ver, dprint
 init()
 lobby_manager = manager()
 import chatify.common as common
@@ -13,17 +13,13 @@ import chatify.message as msg
 import chatify.api as api
 import chatify.generate_file_list as gfl
 import art
-import humanfriendly
 import uvicorn
 from fastapi.responses import HTMLResponse,  JSONResponse
 from fastapi import FastAPI, Request, WebSocket
 from fastapi.staticfiles import StaticFiles
 from slowapi import Limiter
 from slowapi.util import get_remote_address
-from slowapi.errors import RateLimitExceeded
-import starlette.requests
 from starlette.websockets import WebSocketState
-import websockets # literally only here to make sure it is installed
 api.lobby_manager = lobby_manager
 secure.init(key_string, iv)
 secure.lobby_manager = lobby_manager
@@ -303,7 +299,7 @@ async def getChannelInfo(request: Request):
             
             j["logs"]=""
             return jsonify(j)
-        except Exception as e:
+        except Exception:
             return jsonify({})
         
 @app.api_route("/get-lobby-name", methods=["GET"])
@@ -332,7 +328,7 @@ async def login_api(request: Request):
 @app.api_route("/token-to-user", methods=["GET"])
 async def tokenize(request: Request):
     token = request.headers.get("token")
-    username = request.headers.get("username")
+    request.headers.get("username")
     dprint(logins)
     result = secure.tokenize_user(token=token)
     if result:
@@ -422,7 +418,7 @@ async def send(request: Request=None, datarr=None):
         setts = lbIn.channels[channel]
         if setts.type == common.modes.silent and not api.is_admin(token, info["lobby"]):
             return JSONResponse(content={}, status_code=405)
-        if reply != "" and reply != None:
+        if reply != "" and reply is not None:
             info["reply"] = api.get_message(lobbyID, channel, int(info["reply"]))
         conf = await metadata()
         if not conf.get("encryption", False):
@@ -433,10 +429,9 @@ async def send(request: Request=None, datarr=None):
         enc = conf.get("encryption", False)
         #info["reply"] = api.get_message(lobbyID, channel, len(lbIn.channels[channel].logs)-1)
         #info["reactions"]=["😀", "😢", "😡", "👍", "👎"]
-        if message == None:
+        if message is None:
             return JSONResponse(content={}, status_code=405)
-        username = token
-        users = info.get("allowed_users", [])
+        info.get("allowed_users", [])
 
         if info["tp"] == "video":
             fileName = str(random.randint(10000000, 999999999)) + ".mp4"
@@ -496,7 +491,6 @@ async def message(request: Request):
     
 
 import threading
-import time
 def background_save_loop(interval=3):
     global logins
     while True:
@@ -523,7 +517,7 @@ if __name__ == '__main__':
     data.load_messages()
     data.save_messages(False,-1)
     config.init()
-    if not "System" in logins.keys():
+    if "System" not in logins.keys():
         logins["System"] = {"token":_SYSHASH,  "admin":True, "profile_photo": "/static/default.jpg",}
         data.save_messages(True, -1)
     art.tprint(f"TSOC\n{ver}")

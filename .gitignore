@@ -3,6 +3,7 @@ __pycache__
 saves/
 saves
 *.lobby
-
 logins.json
 *.pyc
+**/__pycache__/
+**/*.pyc

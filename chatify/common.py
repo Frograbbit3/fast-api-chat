@@ -1,11 +1,6 @@
-import base64
-import os
-import re
 import random
 import json
-import hashlib
 import time
-import requests
 from . import security
 from .shared import dprint
 class LobbyModes:
@@ -150,7 +145,7 @@ class Lobby:
         }
     def add_user(self, username):
         profile = self.create_user(username)
-        if not profile in self.users:
+        if profile not in self.users:
             self.users.append(self.create_user(username))
             self.refresh_user_count()
     def is_user(self, username):

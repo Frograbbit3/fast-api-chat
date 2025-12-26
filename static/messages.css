@@ -1,0 +1,46 @@
+.message-box {
+    background-color: whitesmoke;
+}
+
+.reactions-holder {
+    height: fit-content;
+    display: inline-flex;
+    width: fit-content;
+    justify-content: flex-end;
+    align-items: center;
+    flex-direction: row;
+    background-color: whitesmoke;
+    border-radius: 5px;
+}
+
+.reactions-holder .reaction {
+    background-color: "#E1E1E1";
+    width: 25px;
+    margin: 5px;
+    height: 25px;
+    display: inline-flex;
+    justify-content: flex-start;
+    border-radius: 4px;
+}
+
+.reactions-holder .reaction p {
+    font-size: 18px;
+    margin: 0px 0px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+
+.avatar-photo {
+    height: 32px;
+    width: 32px;
+    align-self: flex-end;
+    padding: 2px 2px;
+    border-radius: 20px;
+}
+
+.username-text {
+    font-size: 17px;
+    align-self: flex-start;
+    padding: -20px 40px;
+    margin: 4px 10px;
+}

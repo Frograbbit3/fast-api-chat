@@ -1,7 +1,7 @@
 from . import shared, config, security, data, common
-from .shared import chatLogs, logins, _SYSHASH, manager, dprint
+from .shared import logins, _SYSHASH, dprint
 import json
-import requests, time
+import requests
 
 lobby_manager = None
 currentind=0
@@ -19,7 +19,7 @@ def send_message(lobby, channel, message, username="System", full=False, http=Fa
         "channel" : channel,
         "code" : _SYSHASH,
     }
-    if message == None or message == "":
+    if message is None or message == "":
         return
     if http:
         session.post("http://localhost:5000/send", json=table)

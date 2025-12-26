@@ -1,6 +1,9 @@
-from . import common, config
+from . import common
 import pickle
-import os, time, random, json
+import os
+import time
+import random
+import json
 from .shared import dprint
 class Manager:
     def __init__(self, starting_lobbies):
@@ -41,7 +44,7 @@ class Manager:
     def save_lobby(self, lobby_num=-1, unload=True):
         if lobby_num < 0:
             for i, lobby in enumerate(self.lobbies.copy()):
-                if lobby == None or not i in self._loaded_lobbies:
+                if lobby is None or i not in self._loaded_lobbies:
                     continue
                 with open(f"saves/chat{i}.lobby", "wb") as file:
                     file.write(pickle.dumps(lobby))
@@ -50,10 +53,10 @@ class Manager:
                         self.lobbies[self.lobbies.index(lobby)] = None
                         dprint(f"Unloaded lobby {i}")
         elif lobby_num in self._loaded_lobbies:
-                if self.lobbies[lobby_num] == None:
+                if self.lobbies[lobby_num] is None:
                     return
                 
-                if self.lobbies[lobby_num].save == False:
+                if not self.lobbies[lobby_num].save:
                     dprint(f"Lobby {lobby_num} is not set to save, skipping save.")
                     return
                 with open(f"saves/chat{lobby_num}.lobby", "wb") as file:
@@ -78,7 +81,7 @@ class Manager:
                     self.lobbies[i] = common.Lobby()
                     self.lobbies[i].last_read = time.time()
                     self.save_lobby(i)
-        elif not lobby_num in self._loaded_lobbies:
+        elif lobby_num not in self._loaded_lobbies:
                 if os.path.exists(f"saves/chat{lobby_num}.lobby"):
                     with open(f"saves/chat{lobby_num}.lobby", "rb") as file:
                         self.lobbies[lobby_num] = pickle.load(file)
@@ -115,7 +118,7 @@ class Manager:
     def get_lobby(self, lobby_num):
         if self.is_valid(lobby_num):
             self.load_lobby(lobby_num)
-            if self.lobbies[lobby_num] == None:
+            if self.lobbies[lobby_num] is None:
                 if lobby_num in self._loaded_lobbies:
                     self._loaded_lobbies.remove(lobby_num)
                     self.load_lobby(lobby_num)
@@ -149,13 +152,13 @@ class Manager:
         
     def run_tick(self):
         for i, lobby in enumerate(self.lobbies):
-            if lobby==None and i in self._loaded_lobbies:
+            if lobby is None and i in self._loaded_lobbies:
                 self._loaded_lobbies.remove(i)
                 dprint(f"Correctly fixed unloading of lobby {i}")
-            elif not lobby == None and not i in self._loaded_lobbies:
+            elif lobby is not None and i not in self._loaded_lobbies:
                 self._loaded_lobbies.append(i)
                 dprint(f"Correctly fixed loading of lobby {i}")
-            if not lobby == None and i in self._loaded_lobbies:
+            if lobby is not None and i in self._loaded_lobbies:
                 if hasattr(lobby, "last_read"):
                     if time.time() - lobby.last_read > 5:
                         self.save_lobby(i)    
