@@ -16,8 +16,12 @@ div {
 
 .userInfoBox {
     background-color: white;
-    margin: 10px;
-    padding: 10px left, 10px right;
+    /* padding: 10px left, 10px right; */
+}
+
+#user-info-side {
+    width: 40%;
+    float: left;
 }
 
 #user-info-USER {
@@ -32,16 +36,49 @@ div {
 }
 
 .pfp {
-    border-radius: 50%;
+    border-radius: 20%;
     padding: 0px;
 }
 
 #pfp-main {
-    width: 100px;
-    height: 100px;
+    width: 150px;
+    height: 150px;
 }
 
 #profile-side {
     width: 150px;
-    height: 150px;
+    height: 100%;
+    padding: 10px;
+
+    display: grid;
+}
+
+.thyButtons {
+    text-align: center;
+    height: 30px;
+    margin: 5px top, 5px bottom;
+
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+#logOutButton {
+    background-color: red;
+    color: white;
+}
+
+/* #logOutButton button::after { //idk what it is but when i figure it out this'll be implemented
+    background-color: rgb(220, 81, 0);
+    color: rgb(255, 233, 225);
+} */
+
+#actionsDiv {
+    width: 150px;
+    height: 100%;
+    padding: 10px;
+
+    display: grid;
+    gap: 5px;
+
+    float: left;
+    overflow:visible;
 }
